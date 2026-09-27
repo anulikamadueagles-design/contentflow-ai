@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ContentFlow AI — Creator Command Center</title>
+<style>
+:root{
+  --bg:#060910;
+  --panel:#0b111c;
+  --panel2:#0f1725;
+  --line:#1d2a3c;
+  --text:#edf7ff;
+  --muted:#8295aa;
+  --cyan:#53ddff;
+  --purple:#9d7cff;
+  --green:#45e6a2;
+  --danger:#ff667f;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 15% 0%,rgba(83,221,255,.10),transparent 30%),
+    radial-gradient(circle at 90% 10%,rgba(157,124,255,.10),transparent 30%),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+.sidebar{
+  width:245px;
+  background:rgba(6,10,17,.94);
+  border-right:1px solid var(--line);
+  padding:22px 15px;
+  position:fixed;
+  top:0;
+  bottom:0;
+  left:0;
+  z-index:20;
+}
+.logo{
+  font-size:21px;
+  font-weight:900;
+  letter-spacing:1px;
+  color:var(--cyan);
+  margin:5px 10px 4px;
+}
+.logoSub{
+  color:var(--muted);
+  font-size:10px;
+  letter-spacing:2px;
+  margin:0 10px 28px;
+}
+.nav button{
+  width:100%;
+  text-align:left;
+  background:none;
+  border:0;
+  color:#8da0b5;
+  padding:13px 14px;
+  border-radius:10px;
+  margin-bottom:5px;
+}
+.nav button:hover,.nav button.active{
+  background:rgba(83,221,255,.08);
+  color:var(--cyan);
+}
+.main{
+  margin-left:245px;
+  width:calc(100% - 245px);
+  padding:28px;
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:25px;
+}
+.title h1{margin:0;font-size:28px}
+.title p{margin:5px 0 0;color:var(--muted)}
+.badge{
+  border:1px solid rgba(69,230,162,.3);
+  background:rgba(69,230,162,.08);
+  color:var(--green);
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:12px;
+}
+.page{display:none}
+.page.active{display:block}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:18px;
+}
+.card,.panel{
+  background:linear-gradient(145deg,rgba(15,23,37,.96),rgba(8,13,22,.96));
+  border:1px solid var(--line);
+  border-radius:15px;
+  padding:19px;
+  box-shadow:0 15px 50px rgba(0,0,0,.18);
+}
+.statLabel{color:var(--muted);font-size:12px}
+.statValue{font-size:28px;font-weight:800;margin-top:8px}
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+.panel h2{margin:0 0 7px;font-size:19px}
+.panel p.desc{margin:0 0 18px;color:var(--muted);font-size:13px}
+label{
+  display:block;
+  color:#a9b8c9;
+  font-size:12px;
+  margin:12px 0 6px;
+}
+input,textarea,select{
+  width:100%;
+  color:var(--text);
+  background:#080e18;
+  border:1px solid #243349;
+  border-radius:10px;
+  padding:12px;
+  outline:none;
+}
+input:focus,textarea:focus,select:focus{
+  border-color:var(--cyan);
+  box-shadow:0 0 0 3px rgba(83,221,255,.08);
+}
+textarea{min-height:130px;resize:vertical}
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.btn{
+  border:0;
+  border-radius:10px;
+  padding:12px 16px;
+  font-weight:800;
+  margin-top:14px;
+}
+.primary{background:linear-gradient(90deg,var(--cyan),#73a7ff);color:#041019}
+.secondary{background:#162236;color:#cbd9e8;border:1px solid #2a3b54}
+.result{
+  margin-top:16px;
+  background:#060b13;
+  border:1px solid #1d2a3c;
+  border-radius:10px;
+  padding:15px;
+  white-space:pre-wrap;
+  line-height:1.6;
+  color:#dce9f7;
+  max-height:500px;
+  overflow:auto;
+}
+.drop{
+  border:1px dashed #36506e;
+  border-radius:13px;
+  padding:28px;
+  text-align:center;
+  color:var(--muted);
+  background:rgba(83,221,255,.025);
+}
+.preview{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:12px;
+}
+.preview img{
+  width:100%;
+  aspect-ratio:1;
+  object-fit:cover;
+  border-radius:8px;
+  border:1px solid #23354d;
+}
+.progress{
+  height:8px;
+  background:#131d2c;
+  border-radius:99px;
+  overflow:hidden;
+  margin-top:15px;
+}
+.progress span{
+  display:block;
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));
+}
+.platforms{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin:15px 0;
+}
+.platform{
+  border:1px solid #24354b;
+  padding:10px;
+  border-radius:9px;
+  color:#b4c3d4;
+  font-size:11px;
+}
+.kitItem{
+  border:1px solid #1f2e43;
+  border-radius:12px;
+  margin:10px 0;
+  overflow:hidden;
+}
+.kitHead{
+  display:flex;
+  justify-content:space-between;
+  padding:12px 14px;
+  background:#0d1624;
+}
+.kitBody{padding:14px;white-space:pre-wrap;color:#cad8e7;line-height:1.55}
+.small{font-size:11px;color:var(--muted)}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:11px;border-bottom:1px solid #1c2a3d;font-size:13px}
+th{color:#8fa2b8}
+@media(max-width:1000px){
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .grid2{grid-template-columns:1fr}
+}
+@media(max-width:720px){
+  .sidebar{position:static;width:100%;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .app{display:block}
+  .main{margin-left:0;width:100%;padding:16px}
+  .nav{display:grid;grid-template-columns:repeat(2,1fr)}
+  .cards{grid-template-columns:1fr 1fr}
+  .platforms{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<aside class="sidebar">
+  <div class="logo">CONTENTFLOW AI</div>
+  <div class="logoSub">CREATOR COMMAND CENTER</div>
+
+  <div class="nav">
+    <button class="active" data-page="dashboard">◈ Dashboard</button>
+    <button data-page="studio">✦ Content Studio</button>
+    <button data-page="video">▶ Photo → Video</button>
+    <button data-page="repurpose">↻ Repurposing Kit</button>
+    <button data-page="calendar">▦ Content Calendar</button>
+    <button data-page="analytics">◉ Analytics</button>
+    <button data-page="settings">⚙ Settings</button>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="top">
+  <div class="title">
+    <h1 id="pageTitle">Creator Command Center</h1>
+    <p id="pageDescription">Create once. Repurpose everywhere.</p>
+  </div>
+  <div class="badge" id="modeBadge">● SYSTEM ONLINE</div>
+</div>
+
+<section id="dashboard" class="page active">
+  <div class="cards">
+    <div class="card"><div class="statLabel">CONTENT CREATED</div><div class="statValue" id="statContent">0</div></div>
+    <div class="card"><div class="statLabel">VIDEOS CREATED</div><div class="statValue" id="statVideos">0</div></div>
+    <div class="card"><div class="statLabel">REPURPOSED KITS</div><div class="statValue" id="statKits">0</div></div>
+    <div class="card"><div class="statLabel">SYSTEM</div><div class="statValue" style="font-size:18px">READY</div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <h2>ContentFlow AI</h2>
+      <p class="desc">Your complete content production workspace.</p>
+      <div class="platforms">
+        <div class="platform">Instagram</div>
+        <div class="platform">TikTok</div>
+        <div class="platform">Facebook</div>
+        <div class="platform">LinkedIn</div>
+        <div class="platform">X</div>
+        <div class="platform">YouTube</div>
+        <div class="platform">Pinterest</div>
+        <div class="platform">Threads</div>
+        <div class="platform">Snapchat</div>
+        <div class="platform">WhatsApp</div>
+        <div class="platform">Telegram</div>
+        <div class="platform">Reddit</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Quick Start</h2>
+      <p class="desc">Choose what you want to create.</p>
+      <button class="btn primary" onclick="openPage('studio')">Create Content</button>
+      <button class="btn secondary" onclick="openPage('video')">Turn Photos Into Video</button>
+      <button class="btn secondary" onclick="openPage('repurpose')">Open Repurposing Kit</button>
+    </div>
+  </div>
+</section>
+
+<section id="studio" class="page">
+  <div class="grid2">
+    <div class="panel">
+      <h2>AI Content Studio</h2>
+      <p class="desc">Generate platform-specific social content.</p>
+
+      <label>Topic</label>
+      <input id="topic" placeholder="e.g. Real estate investment in Abuja">
+
+      <div class="row">
+        <div>
+          <label>Platform</label>
+          <select id="platform">
+            <option value="instagram">Instagram</option>
+            <option value="tiktok">TikTok</option>
+            <option value="facebook">Facebook</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="x">X</option>
+            <option value="youtube">YouTube</option>
+            <option value="pinterest">Pinterest</option>
+            <option value="threads">Threads</option>
+            <option value="snapchat">Snapchat</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="telegram">Telegram</option>
+            <option value="reddit">Reddit</option>
+          </select>
+        </div>
+        <div>
+          <label>Tone</label>
+          <select id="tone">
+            <option>professional</option>
+            <option>friendly</option>
+            <option>bold</option>
+            <option>educational</option>
+            <option>inspiring</option>
+            <option>casual</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Target Audience</label>
+      <input id="audience" placeholder="e.g. young entrepreneurs">
+
+      <button class="btn primary" onclick="generateContent()">GENERATE CONTENT</button>
+      <div id="studioResult"></div>
+    </div>
+
+    <div class="panel">
+      <h2>What gets generated</h2>
+      <p class="desc">A complete ready-to-use content package.</p>
+      <div class="kitItem"><div class="kitHead">HOOK <span>01</span></div><div class="kitBody">Attention-grabbing opening.</div></div>
+      <div class="kitItem"><div class="kitHead">CAPTION <span>02</span></div><div class="kitBody">Platform-ready caption.</div></div>
+      <div class="kitItem"><div class="kitHead">CTA <span>03</span></div><div class="kitBody">Action-focused closing.</div></div>
+      <div class="kitItem"><div class="kitHead">HASHTAGS <span>04</span></div><div class="kitBody">Relevant hashtag set.</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="video" class="page">
+  <div class="grid2">
+    <div class="panel">
+      <h2>Photo → Video Studio</h2>
+      <p class="desc">Upload photos and generate a real MP4 slideshow using the built-in FFmpeg video engine.</p>
+
+      <label>Photos — up to 12</label>
+      <div class="drop">
+        <input id="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+        <div id="photoCount" style="margin-top:10px">No photos selected</div>
+        <div class="preview" id="preview"></div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Video Ratio</label>
+          <select id="ratio">
+            <option>9:16</option>
+            <option>16:9</option>
+            <option>1:1</option>
+          </select>
+        </div>
+        <div>
+          <label>Seconds Per Photo</label>
+          <select id="photoDuration">
+            <option value="1">1 second</option>
+            <option value="2">2 seconds</option>
+            <option value="3" selected>3 seconds</option>
+            <option value="4">4 seconds</option>
+            <option value="5">5 seconds</option>
+            <option value="10">10 seconds</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn primary" onclick="createPhotoVideo()">CREATE MP4 VIDEO</button>
+      <div class="progress"><span id="videoProgress"></span></div>
+      <div id="videoResult"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Creative Video Planner</h2>
+      <p class="desc">Create a structured video concept before rendering.</p>
+
+      <label>Video idea</label>
+      <textarea id="videoPrompt" placeholder="Describe the video you want to make..."></textarea>
+
+      <div class="row">
+        <div>
+          <label>Ratio</label>
+          <select id="creativeRatio">
+            <option>9:16</option>
+            <option>16:9</option>
+            <option>1:1</option>
+          </select>
+        </div>
+        <div>
+          <label>Duration</label>
+          <select id="creativeDuration">
+            <option>5</option>
+            <option>10</option>
+            <option>15</option>
+            <option>30</option>
+            <option>60</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn secondary" onclick="createVideoPlan()">CREATE VIDEO PLAN</button>
+      <div id="creativeResult"></div>
+    </div>
+  </div>
+</section>
+
+<section id="repurpose" class="page">
+  <div class="panel">
+    <h2>Repurposing Kit</h2>
+    <p class="desc">Turn one original idea into platform-specific content across the major social networks.</p>
+
+    <label>Original Content</label>
+    <textarea id="sourceContent" placeholder="Paste your article, caption, video transcript, idea or original post here..."></textarea>
+
+    <div class="row">
+      <div>
+        <label>Core Topic</label>
+        <input id="repurposeTopic" placeholder="e.g. How to invest in property">
+      </div>
+      <div>
+        <label>Audience</label>
+        <input id="repurposeAudience" value="general audience">
+      </div>
+    </div>
+
+    <button class="btn primary" onclick="repurposeContent()">BUILD COMPLETE REPURPOSING KIT</button>
+
+    <div id="repurposeResult"></div>
+  </div>
+</section>
+
+<section id="calendar" class="page">
+  <div class="panel">
+    <h2>Content Calendar</h2>
+    <p class="desc">Generate a multi-platform content plan.</p>
+
+    <div class="row">
+      <div>
+        <label>Main Topic</label>
+        <input id="calendarTopic" placeholder="Your campaign or content topic">
+      </div>
+      <div>
+        <label>Number of Days</label>
+        <select id="calendarDays">
+          <option value="7">7 days</option>
+          <option value="14">14 days</option>
+          <option value="21">21 days</option>
+          <option value="30">30 days</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn primary" onclick="generateCalendar()">GENERATE CALENDAR</button>
+    <div id="calendarResult"></div>
+  </div>
+</section>
+
+<section id="analytics" class="page">
+  <div class="cards">
+    <div class="card"><div class="statLabel">CONTENT</div><div class="statValue" id="aContent">0</div></div>
+    <div class="card"><div class="statLabel">VIDEOS</div><div class="statValue" id="aVideos">0</div></div>
+    <div class="card"><div class="statLabel">REPURPOSING</div><div class="statValue" id="aKits">0</div></div>
+    <div class="card"><div class="statLabel">API STATUS</div><div class="statValue" style="font-size:18px">ONLINE</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Platform Coverage</h2>
+    <p class="desc">ContentFlow AI supports the following publishing formats.</p>
+    <table>
+      <thead><tr><th>Platform</th><th>Content</th><th>Video</th><th>Repurpose</th></tr></thead>
+      <tbody id="platformTable"></tbody>
+    </table>
+  </div>
+</section>
+
+<section id="settings" class="page">
+  <div class="panel">
+    <h2>System Settings</h2>
+    <p class="desc">Current application configuration.</p>
+    <div class="kitItem"><div class="kitHead">APPLICATION <span>READY</span></div><div class="kitBody">ContentFlow AI 2.0.0</div></div>
+    <div class="kitItem"><div class="kitHead">VIDEO ENGINE <span>FFMPEG</span></div><div class="kitBody">Local MP4 rendering enabled.</div></div>
+    <div class="kitItem"><div class="kitHead">RENDER DEPLOYMENT <span>READY</span></div><div class="kitBody">Configured for Node.js on Render.</div></div>
+    <div class="kitItem"><div class="kitHead">AI PROVIDER <span id="aiStatus">DEMO</span></div><div class="kitBody">Content generation currently uses the built-in content engine. An external AI provider can be connected later without changing the core application.</div></div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+const counters = {
+  content: Number(localStorage.getItem("cf_content") || 0),
+  videos: Number(localStorage.getItem("cf_videos") || 0),
+  kits: Number(localStorage.getItem("cf_kits") || 0)
+};
+
+function saveCounters(){
+  localStorage.setItem("cf_content", counters.content);
+  localStorage.setItem("cf_videos", counters.videos);
+  localStorage.setItem("cf_kits", counters.kits);
+  updateStats();
+}
+
+function updateStats(){
+  document.querySelector("#statContent").textContent = counters.content;
+  document.querySelector("#statVideos").textContent = counters.videos;
+  document.querySelector("#statKits").textContent = counters.kits;
+  document.querySelector("#aContent").textContent = counters.content;
+  document.querySelector("#aVideos").textContent = counters.videos;
+  document.querySelector("#aKits").textContent = counters.kits;
+}
+
+const titles = {
+  dashboard:["Creator Command Center","Create once. Repurpose everywhere."],
+  studio:["AI Content Studio","Generate platform-specific content."],
+  video:["Photo → Video Studio","Turn your photos into real MP4 videos."],
+  repurpose:["Repurposing Kit","One idea. Multiple platforms. Complete content package."],
+  calendar:["Content Calendar","Plan your publishing workflow."],
+  analytics:["Analytics","Monitor your ContentFlow production."],
+  settings:["Settings","ContentFlow AI system configuration."]
+};
+
+function openPage(page){
+  document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+
+  const target = document.getElementById(page);
+  if(target) target.classList.add("active");
+
+  const btn = document.querySelector(`[data-page="${page}"]`);
+  if(btn) btn.classList.add("active");
+
+  document.getElementById("pageTitle").textContent = titles[page][0];
+  document.getElementById("pageDescription").textContent = titles[page][1];
+}
+
+document.querySelectorAll(".nav button").forEach(btn=>{
+  btn.addEventListener("click",()=>openPage(btn.dataset.page));
+});
+
+async function api(url, options={}){
+  const res = await fetch(url,{
+    headers:{
+      "Content-Type":"application/json",
+      ...(options.headers || {})
+    },
+    ...options
+  });
+
+  const data = await res.json().catch(()=>({}));
+
+  if(!res.ok){
+    throw new Error(data.error || "Request failed");
+  }
+
+  return data;
+}
+
+function box(data){
+  const div = document.createElement("div");
+  div.className = "result";
+  div.textContent = typeof data === "string"
+    ? data
+    : JSON.stringify(data,null,2);
+  return div;
+}
+
+async function generateContent(){
+  const result = document.getElementById("studioResult");
+  result.innerHTML = "Generating...";
+
+  try{
+    const data = await api("/api/content/generate",{
+      method:"POST",
+      body:JSON.stringify({
+        topic:document.getElementById("topic").value,
+        platform:document.getElementById("platform").value,
+        tone:document.getElementById("tone").value,
+        audience:document.getElementById("audience").value
+      })
+    });
+
+    counters.content++;
+    saveCounters();
+
+    const r = data.result;
+
+    result.innerHTML = "";
+    result.appendChild(box(
+`HOOK
+${r.hook}
+
+CAPTION
+${r.caption}
+
+CTA
+${r.cta}
+
+HASHTAGS
+${r.hashtags.join(" ")}
+
+FORMAT
+${r.recommendedFormat}`
+    ));
+  }catch(e){
+    result.innerHTML = "";
+    result.appendChild(box("ERROR: " + e.message));
+  }
+}
+
+const photoInput = document.getElementById("photos");
+
+photoInput.addEventListener("change",()=>{
+  const files = [...photoInput.files].slice(0,12);
+
+  document.getElementById("photoCount").textContent =
+    files.length ? `${files.length} photo(s) selected` : "No photos selected";
+
+  const preview = document.getElementById("preview");
+  preview.innerHTML = "";
+
+  files.forEach(file=>{
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    preview.appendChild(img);
+  });
+});
+
+async function createPhotoVideo(){
+  const files = [...photoInput.files].slice(0,12);
+  const result = document.getElementById("videoResult");
+  const progress = document.getElementById("videoProgress");
+
+  if(!files.length){
+    result.innerHTML = "";
+    result.appendChild(box("Select at least one photo."));
+    return;
+  }
+
+  const form = new FormData();
+
+  files.forEach(file=>form.append("photos",file));
+
+  form.append("ratio",document.getElementById("ratio").value);
+  form.append("duration",document.getElementById("photoDuration").value);
+
+  result.innerHTML = "Uploading photos...";
+  progress.style.width = "8%";
+
+  try{
+    const response = await fetch("/api/video/photo-slideshow",{
+      method:"POST",
+      body:form
+    });
+
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(data.error || "Upload failed");
+    }
+
+    const id = data.job.id;
+
+    result.innerHTML = "Rendering MP4...";
+    progress.style.width = "12%";
+
+    const timer = setInterval(async()=>{
+      try{
+        const jobResponse = await fetch("/api/video/jobs/" + id);
+        const jobData = await jobResponse.json();
+
+        if(!jobData.job) return;
+
+        progress.style.width = jobData.job.progress + "%";
+
+        if(jobData.job.status === "completed"){
+          clearInterval(timer);
+          counters.videos++;
+          saveCounters();
+
+          result.innerHTML = `
+            <div class="result">
+              VIDEO READY
+
+              ${jobData.job.photos} photos
+              ${jobData.job.ratio}
+              ${jobData.job.photos * jobData.job.duration} seconds total
+
+              <br><br>
+              <a href="${jobData.job.videoUrl}" target="_blank" download
+                 style="color:#53ddff;font-weight:800">
+                 DOWNLOAD MP4 VIDEO
+              </a>
+            </div>
+          `;
+        }
+
+        if(jobData.job.status === "failed"){
+          clearInterval(timer);
+          result.innerHTML = "";
+          result.appendChild(box("VIDEO FAILED: " + (jobData.job.error || "Unknown error")));
+        }
+      }catch(e){
+        clearInterval(timer);
+        result.innerHTML = "";
+        result.appendChild(box("ERROR: " + e.message));
+      }
+    },1000);
+
+  }catch(e){
+    progress.style.width = "0%";
+    result.innerHTML = "";
+    result.appendChild(box("ERROR: " + e.message));
+  }
+}
+
+async function createVideoPlan(){
+  const result = document.getElementById("creativeResult");
+
+  try{
+    const data = await api("/api/video/generate",{
+      method:"POST",
+      body:JSON.stringify({
+        prompt:document.getElementById("videoPrompt").value,
+        ratio:document.getElementById("creativeRatio").value,
+        duration:Number(document.getElementById("creativeDuration").value)
+      })
+    });
+
+    result.innerHTML = "";
+    result.appendChild(box(data.job));
+  }catch(e){
+    result.innerHTML = "";
+    result.appendChild(box("ERROR: " + e.message));
+  }
+}
+
+async function repurposeContent(){
+  const result = document.getElementById("repurposeResult");
+  result.innerHTML = "Building complete repurposing kit...";
+
+  try{
+    const data = await api("/api/content/repurpose",{
+      method:"POST",
+      body:JSON.stringify({
+        source:document.getElementById("sourceContent").value,
+        topic:document.getElementById("repurposeTopic").value,
+        audience:document.getElementById("repurposeAudience").value,
+        tone:"professional"
+      })
+    });
+
+    counters.kits++;
+    saveCounters();
+
+    result.innerHTML = "";
+
+    Object.entries(data.platforms).forEach(([id,item])=>{
+      const wrap = document.createElement("div");
+      wrap.className = "kitItem";
+
+      const head = document.createElement("div");
+      head.className = "kitHead";
+      head.innerHTML = `<strong>${item.platform}</strong><span>${id.toUpperCase()}</span>`;
+
+      const body = document.createElement("div");
+      body.className = "kitBody";
+      body.textContent =
+`HOOK
+${item.hook}
+
+CAPTION
+${item.caption}
+
+SHORT VERSION
+${item.shortVersion}
+
+VIDEO SCRIPT
+${item.videoScript.join("\n")}
+
+CAROUSEL
+${item.carousel.join("\n")}
+
+CTA
+${item.cta}
+
+HASHTAGS
+${item.hashtags.join(" ")}`;
+
+      wrap.appendChild(head);
+      wrap.appendChild(body);
+      result.appendChild(wrap);
+    });
+
+  }catch(e){
+    result.innerHTML = "";
+    result.appendChild(box("ERROR: " + e.message));
+  }
+}
+
+async function generateCalendar(){
+  const result = document.getElementById("calendarResult");
+
+  try{
+    const data = await api("/api/content/calendar",{
+      method:"POST",
+      body:JSON.stringify({
+        topic:document.getElementById("calendarTopic").value,
+        days:Number(document.getElementById("calendarDays").value)
+      })
+    });
+
+    let html = `
+      <div class="result">
+      <table>
+      <thead>
+      <tr><th>Day</th><th>Platform</th><th>Type</th><th>Topic</th><th>Time</th></tr>
+      </thead><tbody>
+    `;
+
+    data.calendar.forEach(item=>{
+      html += `
+        <tr>
+          <td>${item.day}</td>
+          <td>${item.platform}</td>
+          <td>${item.contentType}</td>
+          <td>${item.topic}</td>
+          <td>${item.suggestedTime}</td>
+        </tr>
+      `;
+    });
+
+    html += "</tbody></table></div>";
+
+    result.innerHTML = html;
+
+  }catch(e){
+    result.innerHTML = "";
+    result.appendChild(box("ERROR: " + e.message));
+  }
+}
+
+function buildPlatformTable(){
+  const names = [
+    "Instagram","TikTok","Facebook","LinkedIn","X","YouTube",
+    "Pinterest","Threads","Snapchat","WhatsApp","Telegram","Reddit"
+  ];
+
+  document.getElementById("platformTable").innerHTML =
+    names.map(name=>`
+      <tr>
+        <td>${name}</td>
+        <td>✓</td>
+        <td>✓</td>
+        <td>✓</td>
+      </tr>
+    `).join("");
+}
+
+async function health(){
+  try{
+    const data = await api("/api/health");
+    document.getElementById("modeBadge").textContent =
+      data.ok ? "● SYSTEM ONLINE" : "● SYSTEM ERROR";
+  }catch{
+    document.getElementById("modeBadge").textContent = "● OFFLINE";
+  }
+}
+
+updateStats();
+buildPlatformTable();
+health();
+</script>
+
+
+
+<script>
+(async function initGenerativeVideo() {
+  const status = document.getElementById("aiVideoStatus");
+  const button = document.getElementById("generateAIVideoBtn");
+  const resultBox = document.getElementById("aiVideoResult");
+
+  if (!status || !button) return;
+
+  try {
+    const response = await fetch("/api/ai-video/status");
+    const data = await response.json();
+
+    if (data.enabled) {
+      status.textContent = "AI ENGINE READY";
+    } else {
+      status.textContent = "API KEY REQUIRED";
+    }
+  } catch {
+    status.textContent = "AI ENGINE OFFLINE";
+  }
+
+  button.addEventListener("click", async () => {
+    const prompt = document.getElementById("aiVideoPrompt").value.trim();
+
+    if (!prompt) {
+      resultBox.innerHTML =
+        '<div class="error">Enter a video prompt first.</div>';
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "GENERATING AI VIDEO...";
+
+    resultBox.innerHTML =
+      '<div class="loading">Submitting your generation request...</div>';
+
+    try {
+      const response = await fetch("/api/ai-video/text-to-video", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          prompt,
+          model: document.getElementById("aiVideoModel").value,
+          duration: Number(document.getElementById("aiVideoDuration").value),
+          orientation: document.getElementById("aiVideoOrientation").value,
+          resolution: document.getElementById("aiVideoResolution").value
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || "Generation failed.");
+      }
+
+      if (data.videoUrl) {
+        renderAIVideo(data.videoUrl);
+      } else {
+        resultBox.innerHTML =
+          '<div class="loading">AI rendering has started. Job: ' +
+          escapeHtml(data.jobId || "") +
+          '</div>';
+      }
+    } catch (error) {
+      resultBox.innerHTML =
+        '<div class="error">' +
+        escapeHtml(error.message) +
+        '</div>';
+    } finally {
+      button.disabled = false;
+      button.textContent = "GENERATE AI VIDEO";
+    }
+  });
+
+  function renderAIVideo(url) {
+    resultBox.innerHTML =
+      '<div class="video-result">' +
+      '<video controls playsinline style="width:100%;max-width:720px;border-radius:18px;">' +
+      '<source src="' + escapeAttr(url) + '" type="video/mp4">' +
+      '</video>' +
+      '<div style="margin-top:12px;">' +
+      '<a href="' + escapeAttr(url) + '" target="_blank" rel="noopener">OPEN VIDEO</a>' +
+      '</div>' +
+      '</div>';
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function escapeAttr(value) {
+    return escapeHtml(value);
+  }
+})();
+</script>
+
+
+<!-- CONTENTFLOW-AI-PROVIDER-STUDIO -->
+
+<section class="panel" id="aiProviderStudio" style="margin-top:24px;">
+  <div class="panel-head">
+    <div>
+      <div class="eyebrow">GENERATIVE AI VIDEO</div>
+      <h2>AI Video Studio</h2>
+      <p>Generate real AI video clips from text prompts.</p>
+    </div>
+
+    <span id="cfAIStatus" class="status">
+      CHECKING PROVIDERS...
+    </span>
+  </div>
+
+  <div class="form-grid">
+
+    <div class="field field-full">
+      <label>VIDEO PROMPT</label>
+
+      <textarea
+        id="cfAIPrompt"
+        rows="6"
+        placeholder="A cinematic luxury apartment overlooking Abuja at sunset, warm golden-hour lighting, realistic architecture, smooth camera movement, premium real-estate commercial, highly detailed..."
+      ></textarea>
+    </div>
+
+    <div class="field">
+      <label>AI PROVIDER</label>
+
+      <select id="cfAIProvider">
+        <option value="magic-hour">
+          Magic Hour
+        </option>
+
+        <option value="pixazo">
+          Pixazo
+        </option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>MODEL</label>
+
+      <select id="cfAIModel">
+        <option value="default">Default</option>
+        <option value="kling">Kling</option>
+        <option value="veo">Veo</option>
+        <option value="sora">Sora</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>DURATION</label>
+
+      <select id="cfAIDuration">
+        <option value="3">3 seconds</option>
+        <option value="5" selected>5 seconds</option>
+        <option value="8">8 seconds</option>
+        <option value="10">10 seconds</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>FORMAT</label>
+
+      <select id="cfAIOrientation">
+        <option value="portrait" selected>
+          9:16 Portrait
+        </option>
+
+        <option value="landscape">
+          16:9 Landscape
+        </option>
+
+        <option value="square">
+          1:1 Square
+        </option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>QUALITY</label>
+
+      <select id="cfAIResolution">
+        <option value="720p" selected>720p</option>
+        <option value="1080p">1080p</option>
+      </select>
+    </div>
+
+  </div>
+
+  <button
+    id="cfGenerateAIVideo"
+    class="primary-btn"
+    type="button"
+  >
+    GENERATE AI VIDEO
+  </button>
+
+  <div
+    id="cfAIProviderMessage"
+    style="margin-top:14px;"
+  ></div>
+
+  <div
+    id="cfAIResult"
+    style="margin-top:20px;"
+  ></div>
+</section>
+
+<script>
+(function () {
+  const status = document.getElementById("cfAIStatus");
+  const provider = document.getElementById("cfAIProvider");
+  const button = document.getElementById("cfGenerateAIVideo");
+  const message = document.getElementById("cfAIProviderMessage");
+  const result = document.getElementById("cfAIResult");
+
+  if (!status || !provider || !button) return;
+
+  let providers = {};
+
+  function esc(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  async function loadProviders() {
+    try {
+      const r = await fetch("/api/ai-video/status");
+      const data = await r.json();
+
+      providers = data.providers || {};
+
+      const magic = providers.magicHour?.enabled;
+      const pixazo = providers.pixazo?.enabled;
+
+      if (magic || pixazo) {
+        status.textContent = "AI ENGINE READY";
+      } else {
+        status.textContent = "ADD API KEYS IN RENDER";
+      }
+
+      updateProviderMessage();
+
+    } catch (error) {
+      status.textContent = "AI ENGINE OFFLINE";
+    }
+  }
+
+  function updateProviderMessage() {
+    const selected = provider.value;
+
+    const enabled =
+      selected === "magic-hour"
+        ? providers.magicHour?.enabled
+        : providers.pixazo?.enabled;
+
+    message.innerHTML = enabled
+      ? '<div class="success">Selected AI provider is ready.</div>'
+      : '<div class="warning">Selected provider API key is not configured yet. Add it to Render when deploying.</div>';
+  }
+
+  provider.addEventListener("change", updateProviderMessage);
+
+  button.addEventListener("click", async function () {
+    const prompt =
+      document.getElementById("cfAIPrompt").value.trim();
+
+    if (!prompt) {
+      result.innerHTML =
+        '<div class="error">Enter a video prompt first.</div>';
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "STARTING AI GENERATION...";
+
+    result.innerHTML =
+      '<div class="loading">Creating your AI video job...</div>';
+
+    try {
+      const response = await fetch(
+        "/api/ai-video/generate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            provider: provider.value,
+            prompt,
+            model:
+              document.getElementById("cfAIModel").value,
+            duration:
+              Number(
+                document.getElementById("cfAIDuration").value
+              ),
+            orientation:
+              document.getElementById("cfAIOrientation").value,
+            resolution:
+              document.getElementById("cfAIResolution").value
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(
+          data.error || "AI generation failed."
+        );
+      }
+
+      const job = data.job;
+
+      result.innerHTML =
+        '<div class="loading">' +
+        'AI video generation started.<br>' +
+        'Provider: <strong>' +
+        esc(job.provider) +
+        '</strong><br>' +
+        'Job: ' +
+        esc(job.id) +
+        '</div>';
+
+      if (job.videoUrl) {
+        showVideo(job.videoUrl);
+      } else {
+        pollJob(job.id);
+      }
+
+    } catch (error) {
+      result.innerHTML =
+        '<div class="error">' +
+        esc(error.message) +
+        '</div>';
+    } finally {
+      button.disabled = false;
+      button.textContent = "GENERATE AI VIDEO";
+    }
+  });
+
+  async function pollJob(id) {
+    let attempts = 0;
+
+    const timer = setInterval(async function () {
+      attempts++;
+
+      try {
+        const r = await fetch(
+          "/api/ai-video/jobs/" +
+          encodeURIComponent(id)
+        );
+
+        const data = await r.json();
+
+        if (!data.ok) return;
+
+        const job = data.job;
+
+        result.innerHTML =
+          '<div class="loading">' +
+          'Generating with ' +
+          esc(job.provider) +
+          '... ' +
+          esc(job.progress || 0) +
+          '%</div>';
+
+        if (job.status === "completed" && job.videoUrl) {
+          clearInterval(timer);
+          showVideo(job.videoUrl);
+        }
+
+        if (job.status === "failed") {
+          clearInterval(timer);
+
+          result.innerHTML =
+            '<div class="error">' +
+            esc(job.error || "AI generation failed.") +
+            '</div>';
+        }
+
+        if (attempts >= 120) {
+          clearInterval(timer);
+
+          result.innerHTML =
+            '<div class="warning">Generation is still processing. You can check the job again later.</div>';
+        }
+
+      } catch {}
+    }, 5000);
+  }
+
+  function showVideo(url) {
+    result.innerHTML =
+      '<video controls playsinline ' +
+      'style="width:100%;max-width:800px;border-radius:18px;">' +
+      '<source src="' +
+      esc(url) +
+      '" type="video/mp4">' +
+      '</video>' +
+      '<div style="margin-top:12px;">' +
+      '<a href="' +
+      esc(url) +
+      '" target="_blank" rel="noopener">' +
+      'OPEN GENERATED VIDEO' +
+      '</a>' +
+      '</div>';
+  }
+
+  loadProviders();
+})();
+</script>
+
+
+<!-- CONTENTFLOW-AI-GENERATIVE-VIDEO -->
+<link rel="stylesheet" href="/ai-video.css">
+
+<section id="contentflow-ai-video">
+  <div class="cf-ai-header">
+    <div>
+      <div class="cf-ai-title">AI Video Generator</div>
+      <div class="cf-ai-subtitle">
+        Turn a text prompt into a real generative video using Magic Hour or Pixazo.
+      </div>
+    </div>
+
+    <div class="cf-ai-providers">
+      <span id="cf-badge-magic" class="cf-ai-badge">
+        Magic Hour • checking…
+      </span>
+      <span id="cf-badge-pixazo" class="cf-ai-badge">
+        Pixazo • checking…
+      </span>
+    </div>
+  </div>
+
+  <div class="cf-ai-grid">
+
+    <div class="cf-ai-card">
+
+      <div class="cf-ai-field">
+        <label>AI VIDEO PROVIDER</label>
+        <select id="cf-ai-provider">
+          <option value="magic-hour">Magic Hour</option>
+          <option value="pixazo">Pixazo</option>
+        </select>
+      </div>
+
+      <div class="cf-ai-field">
+        <label>VIDEO PROMPT</label>
+        <textarea
+          id="cf-ai-prompt"
+          placeholder="Example: A luxury apartment overlooking Abuja at golden hour, cinematic drone camera slowly moving forward, warm sunlight reflecting on the glass windows, premium real-estate advertisement, realistic motion, elegant atmosphere."
+        ></textarea>
+      </div>
+
+      <div class="cf-ai-row">
+
+        <div class="cf-ai-field">
+          <label>DURATION</label>
+          <select id="cf-ai-duration">
+            <option value="2">2 seconds</option>
+            <option value="3">3 seconds</option>
+            <option value="4">4 seconds</option>
+            <option value="5" selected>5 seconds</option>
+            <option value="6">6 seconds</option>
+            <option value="8">8 seconds</option>
+            <option value="10">10 seconds</option>
+          </select>
+        </div>
+
+        <div class="cf-ai-field">
+          <label>FORMAT</label>
+          <select id="cf-ai-orientation">
+            <option value="portrait">9:16 Portrait</option>
+            <option value="landscape">16:9 Landscape</option>
+            <option value="square">1:1 Square</option>
+          </select>
+        </div>
+
+        <div class="cf-ai-field">
+          <label>RESOLUTION</label>
+          <select id="cf-ai-resolution">
+            <option value="720p" selected>720p</option>
+            <option value="1080p">1080p</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="cf-ai-field">
+        <label>MODEL</label>
+        <select id="cf-ai-model">
+          <option value="default" selected>Provider Default</option>
+          <option value="ltx-2.5">LTX 2.5</option>
+          <option value="kling-3.0">Kling 3.0</option>
+          <option value="veo3.1">Veo 3.1</option>
+          <option value="seedance-2.5">Seedance 2.5</option>
+          <option value="wan-3.0">Wan 3.0</option>
+        </select>
+      </div>
+
+      <button id="cf-ai-generate" class="cf-ai-generate">
+        GENERATE AI VIDEO
+      </button>
+
+    </div>
+
+    <div class="cf-ai-card">
+
+      <div id="cf-ai-status" class="cf-ai-status">
+        Ready. Add your Render API keys to activate AI video generation.
+      </div>
+
+      <video
+        id="cf-ai-video"
+        class="cf-ai-video"
+        controls
+        playsinline
+      ></video>
+
+      <a
+        id="cf-ai-download"
+        class="cf-ai-download"
+        target="_blank"
+        rel="noopener"
+      >
+        DOWNLOAD GENERATED VIDEO
+      </a>
+
+      <div class="cf-ai-job-list">
+        <div style="font-weight:800;margin-bottom:8px;">
+          Recent AI Video Jobs
+        </div>
+        <div id="cf-ai-jobs"></div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<script src="/ai-video.js"></script>
+
+</body>
+</html>

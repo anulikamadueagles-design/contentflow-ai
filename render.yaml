@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: contentflow-ai
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DEMO_MODE
+        value: "true"
