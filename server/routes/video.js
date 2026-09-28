@@ -6,9 +6,14 @@ const crypto = require("crypto");
 
 const {
   createPhotoSlideshow,
-  getJob,
+  getJob: getPhotoJob,
   getStats
 } = require("../lib/video");
+
+const {
+  generate: generateAIVideo,
+  getJob: getAIVideoJob
+} = require("../lib/ai-video");
 
 const router = express.Router();
 
@@ -85,47 +90,82 @@ router.post(
 );
 
 router.post("/generate", async (req, res) => {
-  const {
-    prompt,
-    ratio = "9:16",
-    duration = 10
-  } = req.body;
+  try {
+    const {
+      prompt,
+      provider = "magic-hour",
+      ratio = "9:16",
+      duration = 5,
+      resolution = "720p",
+      model,
+      name
+    } = req.body || {};
 
-  if (!prompt || !String(prompt).trim()) {
-    return res.status(400).json({
+    if (!prompt || !String(prompt).trim()) {
+      return res.status(400).json({
+        ok: false,
+        error: "Video prompt is required."
+      });
+    }
+
+    const orientation =
+      ratio === "16:9"
+        ? "landscape"
+        : ratio === "1:1"
+          ? "square"
+          : "portrait";
+
+    const job = await generateAIVideo(provider, {
+      prompt,
+      duration,
+      orientation,
+      resolution,
+      model,
+      name
+    });
+
+    res.status(202).json({
+      ok: true,
+      message: "AI video generation started.",
+      job
+    });
+  } catch (error) {
+    console.error("VIDEO GENERATION ERROR:", error);
+
+    const status =
+      /API key is not configured/i.test(error.message || "")
+        ? 503
+        : 400;
+
+    res.status(status).json({
       ok: false,
-      error: "Video prompt is required."
+      error: error.message || "AI video generation failed."
     });
   }
-
-  res.json({
-    ok: true,
-    job: {
-      id: crypto.randomUUID(),
-      type: "creative-video-plan",
-      status: "completed",
-      prompt,
-      ratio,
-      duration,
-      message:
-        "Creative video plan created."
-    }
-  });
 });
 
 router.get("/jobs/:id", (req, res) => {
-  const job = getJob(req.params.id);
+  const photoJob = getPhotoJob(req.params.id);
 
-  if (!job) {
-    return res.status(404).json({
-      ok: false,
-      error: "Video job not found."
+  if (photoJob) {
+    return res.json({
+      ok: true,
+      job: photoJob
     });
   }
 
-  res.json({
-    ok: true,
-    job
+  const aiJob = getAIVideoJob(req.params.id);
+
+  if (aiJob) {
+    return res.json({
+      ok: true,
+      job: aiJob
+    });
+  }
+
+  res.status(404).json({
+    ok: false,
+    error: "Video job not found."
   });
 });
 

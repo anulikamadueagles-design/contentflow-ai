@@ -1,0 +1,13 @@
+CONTENTFLOW AI — COMMERCIAL SOURCE CODE LICENSE
+
+The purchaser receives a non-exclusive license to use and modify this source code for commercial projects.
+
+The purchaser may deploy applications built from the source code and may commercially operate those applications.
+
+The purchaser may not resell, redistribute, sublicense, publish, upload, or otherwise distribute the original source-code package itself as a competing source-code product.
+
+Third-party APIs and services are governed by their own terms and conditions.
+
+API keys must remain private and must not be committed to public repositories.
+
+The source code is provided as-is without guarantees regarding third-party API availability, future provider changes, hosting availability, or uninterrupted operation.

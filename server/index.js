@@ -10,6 +10,7 @@ const fs = require("fs");
 const contentRoutes = require("./routes/content");
 const videoRoutes = require("./routes/video");
 const aiVideoRoutes = require("./routes/ai-video");
+const { getStats } = require("./lib/analytics");
 
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
@@ -55,7 +56,7 @@ app.get("/api/health", (req, res) => {
   res.json({
     ok: true,
     service: "ContentFlow AI",
-    version: "3.1.0",
+    version: process.env.APP_VERSION || "3.2.0",
     demoMode: process.env.DEMO_MODE === "true",
     videoEngine: "Native FFmpeg",
     features: {
@@ -74,10 +75,7 @@ app.get("/api/dashboard", (req, res) => {
   res.json({
     ok: true,
     stats: {
-      contentCreated: 0,
-      videosCreated: 0,
-      repurposedKits: 0,
-      scheduledPosts: 0
+      ...getStats()
     }
   });
 });
@@ -102,7 +100,7 @@ app.use((error, req, res, next) => {
 app.listen(PORT, () => {
   console.log("");
   console.log("==============================================");
-  console.log("        CONTENTFLOW AI 3.1.0");
+  console.log("        CONTENTFLOW AI 3.2.0");
   console.log("==============================================");
   console.log(`Server: http://127.0.0.1:${PORT}`);
   console.log(`Demo mode: ${process.env.DEMO_MODE === "true"}`);

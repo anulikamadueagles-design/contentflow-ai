@@ -1,11 +1,13 @@
 {
   "name": "contentflow-ai",
-  "version": "3.1.0",
-  "description": "ContentFlow AI — AI-powered social media content creation with Magic Hour and Pixazo video generation.",
+  "version": "3.2.0",
+  "description": "ContentFlow AI \u2014 AI-powered social media content creation with Magic Hour and Pixazo video generation.",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
-    "dev": "node --watch server/index.js"
+    "dev": "node --watch server/index.js",
+    "audit": "node --check server/index.js && node --check server/routes/content.js && node --check server/lib/content-engine.js && node --check server/lib/ai-video.js && node --check server/routes/ai-video.js && node --check server/routes/video.js",
+    "test": "node scripts/test-api.js"
   },
   "engines": {
     "node": ">=18"
