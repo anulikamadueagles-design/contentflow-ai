@@ -63,7 +63,7 @@ function createJob(provider, payload) {
     prompt: payload.prompt,
     duration: Number(payload.duration || 5),
     orientation: payload.orientation || "portrait",
-    resolution: payload.resolution || "720p",
+    resolution: payload.resolution || "480p",
     model: payload.model || "default",
     name: payload.name || "ContentFlow AI Video",
     providerJobId: null,
@@ -173,7 +173,7 @@ async function magicHourCreate(payload, job) {
         : payload.orientation === "square"
           ? "square"
           : "portrait",
-    resolution: payload.resolution || "720p",
+    resolution: (process.env.FREE_MODE === "true" && ["720p","1080p"].includes(payload.resolution)) ? "480p" : (payload.resolution || "480p"),
     style: {
       prompt: payload.prompt
     }
@@ -211,6 +211,8 @@ async function magicHourCreate(payload, job) {
   const videoUrl = cleanVideoUrl(
     data.video_url ||
     data.videoUrl ||
+    data.output_url ||
+    data.output?.media_url?.[0] ||
     data.download_url ||
     data.downloads
   );
@@ -349,7 +351,7 @@ function startMagicHourPolling(jobId) {
 async function pixazoCreate(payload, job) {
   const endpoint =
     process.env.PIXAZO_TEXT_TO_VIDEO_URL ||
-    "https://api.pixazo.ai/v1/text-to-video";
+    "https://gateway.pixazo.ai/ltx/text-to-video";
 
   const body = {
     prompt: payload.prompt,
@@ -360,7 +362,7 @@ async function pixazoCreate(payload, job) {
         : payload.orientation === "square"
           ? "1:1"
           : "9:16",
-    resolution: payload.resolution || "720p"
+    resolution: payload.resolution || "480p"
   };
 
   /*
@@ -384,7 +386,7 @@ async function pixazoCreate(payload, job) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.PIXAZO_API_KEY}`
+      "Ocp-Apim-Subscription-Key": process.env.PIXAZO_API_KEY
     },
     body: JSON.stringify(body)
   });
@@ -397,7 +399,7 @@ async function pixazoCreate(payload, job) {
     data.id;
 
   const pollUrl =
-    data.poll_url ||
+    data.poll_url || data.polling_url ||
     data.polling_url ||
     null;
 
@@ -439,7 +441,7 @@ async function pixazoStatus(job) {
   const response = await fetch(pollUrl, {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${process.env.PIXAZO_API_KEY}`,
+      "Ocp-Apim-Subscription-Key": process.env.PIXAZO_API_KEY,
       "Ocp-Apim-Subscription-Key":
         process.env.PIXAZO_API_KEY
     }
