@@ -573,6 +573,9 @@ async function generate(provider, payload) {
   const normalized = {
     ...payload,
     prompt,
+    resolution: provider === "magic-hour"
+      ? "480p"
+      : (payload.resolution || "720p"),
     duration: Math.min(
       60,
       Math.max(2, Number(payload.duration || 5))
