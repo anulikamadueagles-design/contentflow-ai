@@ -351,7 +351,7 @@ function startMagicHourPolling(jobId) {
 async function pixazoCreate(payload, job) {
   const endpoint =
     process.env.PIXAZO_TEXT_TO_VIDEO_URL ||
-    "https://gateway.pixazo.ai/ltx/text-to-video";
+    "https://gateway.pixazo.ai/ltx-video/v1/text-to-video";
 
   const body = {
     prompt: payload.prompt,
