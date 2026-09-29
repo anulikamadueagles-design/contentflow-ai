@@ -579,8 +579,8 @@ async function generate(provider, payload) {
       ? "480p"
       : (payload.resolution || "720p"),
     duration: Math.min(
-      60,
-      Math.max(2, Number(payload.duration || 5))
+      600,
+      Math.max(5, Number(payload.duration || 5))
     )
   };
 
